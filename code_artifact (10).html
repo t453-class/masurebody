@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身形比例與腰位穿搭計算器</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fbf7f5',
+                            100: '#f6ede8',
+                            200: '#edd9ce',
+                            500: '#c88a6d',
+                            600: '#b87556',
+                            700: '#9a5c41',
+                            900: '#522f20',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .ratio-bar-item {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased">
+
+    <div class="max-w-4xl mx-auto space-y-8">
+        
+        <!-- Header Section -->
+        <header class="text-center space-y-2">
+            <div class="inline-flex items-center justify-center p-3 bg-brand-100 text-brand-700 rounded-full mb-2">
+                <i class="fa-solid me-2 fa-ruler-vertical text-xl"></i>
+                <span class="font-semibold text-sm tracking-wide">FASHION PROPORTION CALCULATOR</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-tight">
+                身形比例與腰位穿搭計算器
+            </h1>
+            <p class="text-slate-500 text-sm sm:text-base max-w-xl mx-auto">
+                首先測量「骨盆上方」得出個人真實身長比例；再對比「肚臍位置」與「制服/體育服褲頭位置」，直觀觀察穿搭視覺變化的修飾效果！
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Panel: Input Form (5 cols) -->
+            <section class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-100 card-shadow space-y-5">
+                <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-brand-600"></i>
+                        數據輸入
+                    </h2>
+                    <span class="text-xs text-slate-400">單位：公分 (cm)</span>
+                </div>
+
+                <form id="calculatorForm" class="space-y-4" onsubmit="event.preventDefault();">
+                    
+                    <!-- Height Input -->
+                    <div>
+                        <label for="height" class="block text-sm font-bold text-slate-800 mb-1">
+                            1. 全身身高 <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <input type="number" id="height" step="0.1" min="50" max="250" placeholder="例如：165" value="165"
+                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-bold text-base transition">
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 text-sm">
+                                cm
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: True Body Measurement (Pelvic Top) -->
+                    <div class="p-3.5 bg-brand-100/50 rounded-xl border-2 border-brand-500 space-y-1.5 shadow-sm">
+                        <div class="flex justify-between items-center">
+                            <label for="legMid" class="text-xs font-black text-brand-900 flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-600"></span> 2. 骨盆上方腿長 (真實身形)
+                            </label>
+                            <span class="text-[10px] font-extrabold text-brand-800 bg-brand-200 px-2 py-0.5 rounded">★ 身形基準標竿</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">測量點：赤腳，從骨盆上方（髂嵴上緣）垂直量至腳底。</p>
+                        <div class="relative">
+                            <input type="number" id="legMid" step="0.1" min="30" max="150" placeholder="例如：96" value="96"
+                                class="w-full px-3 py-2 rounded-lg border border-brand-300 focus:ring-2 focus:ring-brand-500 text-slate-800 text-sm font-bold bg-white">
+                            <span class="absolute right-3 top-2 text-xs text-slate-400">cm</span>
+                        </div>
+                    </div>
+
+                    <!-- Section Divider -->
+                    <div class="pt-2 border-t border-slate-100">
+                        <span class="text-xs font-bold text-slate-500 flex items-center gap-1">
+                            <i class="fa-solid fa-shirt text-brand-600"></i> 穿搭與制服腰線比較測量：
+                        </span>
+                    </div>
+
+                    <!-- Step 2: Navel Measurement (High Waist) -->
+                    <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <label for="legNavel" class="text-xs font-bold text-emerald-900 flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 3. 從肚臍測量腿長
+                            </label>
+                            <span class="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">高腰穿搭視覺</span>
+                        </div>
+                        <div class="relative">
+                            <input type="number" id="legNavel" step="0.1" min="30" max="150" placeholder="例如：102" value="102"
+                                class="w-full px-3 py-1.5 rounded-lg border border-emerald-300 focus:ring-2 focus:ring-emerald-500 text-slate-800 text-sm font-medium bg-white">
+                            <span class="absolute right-3 top-1.5 text-xs text-slate-400">cm</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: School Uniform / PE Pants Waistband -->
+                    <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <label for="legUniform" class="text-xs font-bold text-blue-900 flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span> 4. 制服/體育服褲頭腿長
+                            </label>
+                            <span class="text-[10px] text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">校服實際穿法</span>
+                        </div>
+                        <div class="relative">
+                            <input type="number" id="legUniform" step="0.1" min="30" max="150" placeholder="例如：93" value="93"
+                                class="w-full px-3 py-1.5 rounded-lg border border-blue-300 focus:ring-2 focus:ring-blue-500 text-slate-800 text-sm font-medium bg-white">
+                            <span class="absolute right-3 top-1.5 text-xs text-slate-400">cm</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Low Waist (Hipbone) -->
+                    <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <label for="legLow" class="text-xs font-bold text-amber-900 flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> 5. 低腰/髖骨處腿長
+                            </label>
+                            <span class="text-[10px] text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">低腰街頭視覺</span>
+                        </div>
+                        <div class="relative">
+                            <input type="number" id="legLow" step="0.1" min="30" max="150" placeholder="例如：88" value="88"
+                                class="w-full px-3 py-1.5 rounded-lg border border-amber-300 focus:ring-2 focus:ring-amber-500 text-slate-800 text-sm font-medium bg-white">
+                            <span class="absolute right-3 top-1.5 text-xs text-slate-400">cm</span>
+                        </div>
+                    </div>
+
+                    <!-- Waist Selector Tabs -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">
+                            切換右側主要檢視細節：
+                        </label>
+                        <div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl text-center">
+                            <button type="button" onclick="setActiveWaist('mid')" id="tab-mid" class="py-1.5 text-[11px] font-bold rounded-lg transition bg-white text-brand-700 shadow-sm">
+                                骨盆真實
+                            </button>
+                            <button type="button" onclick="setActiveWaist('navel')" id="tab-navel" class="py-1.5 text-[11px] font-bold rounded-lg transition text-slate-600 hover:text-slate-900">
+                                肚臍高腰
+                            </button>
+                            <button type="button" onclick="setActiveWaist('uniform')" id="tab-uniform" class="py-1.5 text-[11px] font-bold rounded-lg transition text-slate-600 hover:text-slate-900">
+                                制服褲頭
+                            </button>
+                            <button type="button" onclick="setActiveWaist('low')" id="tab-low" class="py-1.5 text-[11px] font-bold rounded-lg transition text-slate-600 hover:text-slate-900">
+                                低腰髖骨
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </section>
+
+            <!-- Right Panel: Results & Analysis (7 cols) -->
+            <section class="lg:col-span-7 space-y-5">
+                
+                <!-- Primary Real Body Proportion Banner -->
+                <div class="bg-gradient-to-r from-brand-700 to-brand-900 text-white p-5 rounded-2xl shadow-lg space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="inline-block text-xs font-bold bg-brand-500/40 text-brand-100 px-2.5 py-0.5 rounded-full border border-brand-300/30 mb-1">
+                                核心身形指標 (骨盆上方真實測量)
+                            </span>
+                            <h3 class="text-3xl font-black text-white tracking-tight" id="trueProportionTitle">四六身</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-brand-200 block">骨盆真實比例數值</span>
+                            <span class="text-3xl font-extrabold text-amber-300 font-mono" id="trueRatioValue">0.72</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-brand-100/90 leading-relaxed pt-1 border-t border-brand-600/50">
+                        這是您未經服裝腰頭調校下的真實骨架比例。下方可對比「穿制服」與「拉高至肚臍」帶來的視覺差異！
+                    </p>
+                </div>
+
+                <!-- Main Analysis Display Card -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow space-y-5">
+                    
+                    <!-- Result Title Header -->
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div>
+                            <span class="text-xs uppercase font-bold text-brand-600" id="selectedWaistTag">【骨盆上方真實身形】分析結果</span>
+                            <h3 class="text-2xl font-black text-slate-800" id="proportionTitle">四六身</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 block">上半身 ÷ 腿長</span>
+                            <span class="text-2xl font-extrabold text-brand-600 font-mono" id="ratioValue">0.72</span>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics Grid -->
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-xs text-slate-400 mb-0.5">全身身高</div>
+                            <div class="text-lg font-bold text-slate-700" id="displayHeight">165 <span class="text-xs font-normal">cm</span></div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-xs text-slate-400 mb-0.5">下半身腿長</div>
+                            <div class="text-lg font-bold text-brand-600" id="displayLeg">96 <span class="text-xs font-normal">cm</span></div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-xs text-slate-400 mb-0.5">上半身數字</div>
+                            <div class="text-lg font-bold text-slate-700" id="displayUpper">69 <span class="text-xs font-normal">cm</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Proportion Bar -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs font-semibold text-slate-600">
+                            <span>上半身 (軀幹): <span id="upperPercent">41.8%</span></span>
+                            <span>下半身 (腿長): <span id="legPercent">58.2%</span></span>
+                        </div>
+                        <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex p-0.5 border border-slate-200">
+                            <div id="barUpper" class="h-full bg-slate-400 rounded-l-full transition-all duration-500" style="width: 41.8%;"></div>
+                            <div id="barLeg" class="h-full bg-brand-500 rounded-r-full transition-all duration-500" style="width: 58.2%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Formula Step Box -->
+                    <div class="p-3 bg-amber-50/70 rounded-xl border border-amber-100 text-xs text-amber-900 flex items-start gap-2">
+                        <i class="fa-solid fa-calculator mt-0.5 text-amber-600"></i>
+                        <div>
+                            <strong>計算公式驗算：</strong><br>
+                            1. 上半身 = 身高 - 腿長（<span id="formulaStep1" class="font-mono">165 - 96 = 69</span> cm）<br>
+                            2. 比例數據 = 上半身 ÷ 腿長（<span id="formulaStep2" class="font-mono">69 ÷ 96 = 0.72</span>）
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 4-Waist Comparison Summary Card -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 card-shadow space-y-3">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-brand-600"></i>
+                            四種腰位視覺效果總對比
+                        </span>
+                        <span class="text-[11px] text-slate-400 font-normal">點擊切換詳細分析</span>
+                    </h3>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <!-- Pelvic Real -->
+                        <div id="card-mid" onclick="setActiveWaist('mid')" class="p-2.5 rounded-xl border text-center cursor-pointer transition hover:shadow-md border-brand-500 bg-brand-50/30 ring-1 ring-brand-500">
+                            <span class="text-[10px] font-black text-brand-700 block">1. 骨盆真實</span>
+                            <div class="text-xs font-black text-slate-800 mt-1" id="sumMidType">四六身</div>
+                            <div class="text-[10px] text-slate-400 font-mono" id="sumMidRatio">0.72</div>
+                        </div>
+
+                        <!-- Navel High Waist -->
+                        <div id="card-navel" onclick="setActiveWaist('navel')" class="p-2.5 rounded-xl border text-center cursor-pointer transition hover:shadow-md border-slate-200 bg-slate-50">
+                            <span class="text-[10px] font-bold text-emerald-600 block">2. 肚臍高腰</span>
+                            <div class="text-xs font-extrabold text-slate-800 mt-1" id="sumNavelType">三七身</div>
+                            <div class="text-[10px] text-slate-400 font-mono" id="sumNavelRatio">0.62</div>
+                        </div>
+
+                        <!-- School Uniform -->
+                        <div id="card-uniform" onclick="setActiveWaist('uniform')" class="p-2.5 rounded-xl border text-center cursor-pointer transition hover:shadow-md border-slate-200 bg-slate-50">
+                            <span class="text-[10px] font-bold text-blue-600 block">3. 制服/體育服</span>
+                            <div class="text-xs font-extrabold text-slate-800 mt-1" id="sumUniformType">四六身</div>
+                            <div class="text-[10px] text-slate-400 font-mono" id="sumUniformRatio">0.77</div>
+                        </div>
+
+                        <!-- Low Waist -->
+                        <div id="card-low" onclick="setActiveWaist('low')" class="p-2.5 rounded-xl border text-center cursor-pointer transition hover:shadow-md border-slate-200 bg-slate-50">
+                            <span class="text-[10px] font-bold text-amber-600 block">4. 低腰髖骨</span>
+                            <div class="text-xs font-extrabold text-slate-800 mt-1" id="sumLowType">五五身</div>
+                            <div class="text-[10px] text-slate-400 font-mono" id="sumLowRatio">0.88</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fashion Advice Card -->
+                <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-2xl card-shadow space-y-3">
+                    <div class="flex items-center gap-2 border-b border-slate-700 pb-2.5">
+                        <i class="fa-solid fa-graduation-cap text-amber-400 text-lg"></i>
+                        <h3 class="text-sm font-bold tracking-wide">穿搭課教學引導與制服建議</h3>
+                    </div>
+
+                    <div id="stylingAdvice" class="space-y-2.5 text-xs text-slate-300 leading-relaxed">
+                        <!-- Dynamic styling advice content will be inserted via JS -->
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- Reference Table Section -->
+        <section class="bg-white p-6 rounded-2xl border border-slate-100 card-shadow space-y-3">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-brand-600"></i>
+                身長比對應對照表（依比例數值劃分）
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-600 border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 font-semibold text-xs uppercase">
+                            <th class="p-2.5 rounded-l-lg">比例數據 (上半身 ÷ 腿長)</th>
+                            <th class="p-2.5">身長比分類</th>
+                            <th class="p-2.5">視覺特徵</th>
+                            <th class="p-2.5 rounded-r-lg">制服與日常穿搭建議</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs">
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-2.5 font-mono font-bold text-brand-600">0.40 - 0.60</td>
+                            <td class="p-2.5 font-bold text-slate-800">三七身</td>
+                            <td class="p-2.5">黃金長腿比例，下半身極修長</td>
+                            <td class="p-2.5">制服即便隨性穿著依然好看，高腰更能展現氣場。</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-2.5 font-mono font-bold text-brand-600">0.61 - 0.80</td>
+                            <td class="p-2.5 font-bold text-slate-800">四六身</td>
+                            <td class="p-2.5">自然勻稱標準比例</td>
+                            <td class="p-2.5">穿制服時將體育褲拉回骨盆上方，或適度扎衣服即可維持優良比例。</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-2.5 font-mono font-bold text-brand-600">0.81 - 1.00</td>
+                            <td class="p-2.5 font-bold text-slate-800">五五身</td>
+                            <td class="p-2.5">上下身視覺長度相近</td>
+                            <td class="p-2.5">避免將體育褲拉低穿成低腰；建議將制服上衣扎入或提高褲頭。</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-2.5 font-mono font-bold text-brand-600">1.10 - 1.50</td>
+                            <td class="p-2.5 font-bold text-slate-800">六四身</td>
+                            <td class="p-2.5">軀幹比重較高</td>
+                            <td class="p-2.5">強烈建議選擇高腰褲頭，配合上衣短版或紮入，重塑長腿視覺。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-slate-400 pt-2">
+            <p>身形比例與腰位穿搭計算器 &copy; 服裝美學教學工具. 數據僅供教學與穿搭參考.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Active waist state ('mid' = pelvic real, 'navel' = navel high, 'uniform' = school uniform, 'low' = low waist)
+        let activeWaist = 'mid';
+
+        // Input element references
+        const heightInput = document.getElementById('height');
+        const legMidInput = document.getElementById('legMid');
+        const legNavelInput = document.getElementById('legNavel');
+        const legUniformInput = document.getElementById('legUniform');
+        const legLowInput = document.getElementById('legLow');
+
+        // Header True Body Banner elements
+        const trueProportionTitle = document.getElementById('trueProportionTitle');
+        const trueRatioValue = document.getElementById('trueRatioValue');
+
+        // Main Display elements
+        const selectedWaistTag = document.getElementById('selectedWaistTag');
+        const proportionTitle = document.getElementById('proportionTitle');
+        const ratioValueDisplay = document.getElementById('ratioValue');
+        const displayHeight = document.getElementById('displayHeight');
+        const displayLeg = document.getElementById('displayLeg');
+        const displayUpper = document.getElementById('displayUpper');
+        const upperPercent = document.getElementById('upperPercent');
+        const legPercent = document.getElementById('legPercent');
+        const barUpper = document.getElementById('barUpper');
+        const barLeg = document.getElementById('barLeg');
+        const formulaStep1 = document.getElementById('formulaStep1');
+        const formulaStep2 = document.getElementById('formulaStep2');
+
+        // Summary Card elements
+        const sumMidType = document.getElementById('sumMidType');
+        const sumMidRatio = document.getElementById('sumMidRatio');
+        const sumNavelType = document.getElementById('sumNavelType');
+        const sumNavelRatio = document.getElementById('sumNavelRatio');
+        const sumUniformType = document.getElementById('sumUniformType');
+        const sumUniformRatio = document.getElementById('sumUniformRatio');
+        const sumLowType = document.getElementById('sumLowType');
+        const sumLowRatio = document.getElementById('sumLowRatio');
+
+        const stylingAdvice = document.getElementById('stylingAdvice');
+
+        /**
+         * Get category based on exact user specification:
+         * 0.40 - 0.60: 三七身
+         * 0.61 - 0.80: 四六身
+         * 0.81 - 1.00: 五五身
+         * 1.10 - 1.50: 六四身
+         */
+        function getProportionCategory(ratio) {
+            if (ratio <= 0) return { title: '數據異常', code: 'INVALID' };
+            if (ratio >= 0.40 && ratio <= 0.60) {
+                return { title: '三七身', code: '37' };
+            } else if (ratio > 0.60 && ratio <= 0.80) {
+                return { title: '四六身', code: '46' };
+            } else if (ratio > 0.80 && ratio <= 1.00) {
+                return { title: '五五身', code: '55' };
+            } else if (ratio >= 1.10 && ratio <= 1.50) {
+                return { title: '六四身', code: '64' };
+            } else if (ratio < 0.40) {
+                return { title: '極致超長腿 (小於0.4)', code: 'SUPER_LONG' };
+            } else {
+                return { title: '長軀幹身形 (大於1.0)', code: 'LONG_TORSO' };
+            }
+        }
+
+        function setActiveWaist(type) {
+            activeWaist = type;
+
+            const tabs = ['mid', 'navel', 'uniform', 'low'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const card = document.getElementById(`card-${t}`);
+                if (t === type) {
+                    btn.className = "py-1.5 text-[11px] font-bold rounded-lg transition bg-white text-brand-700 shadow-sm";
+                    card.className = "p-2.5 rounded-xl border text-center cursor-pointer transition hover:shadow-md border-brand-500 bg-brand-50/30 ring-1 ring-brand-500";
+                } else {
+                    btn.className = "py-1.5 text-[11px] font-bold rounded-lg transition text-slate-600 hover:text-slate-900";
+                    card.className = "p-2.5 rounded-xl border text-center cursor-pointer transition hover:shadow-md border-slate-200 bg-slate-50";
+                }
+            });
+
+            calculateAll();
+        }
+
+        function generateStylingAdvice(proportionCode, waistType, realCode) {
+            let waistDesc = "";
+            if (waistType === 'mid') {
+                waistDesc = "【骨盆上方（真實身形）】這是您的解剖學真實身形比例基準。不靠褲頭調整時的天然體型。";
+            } else if (waistType === 'navel') {
+                waistDesc = "【肚臍位置（高腰效果）】褲頭落在肚臍，視覺腿長起點向上延伸，能顯著拉長下半身。";
+            } else if (waistType === 'uniform') {
+                waistDesc = "【制服/體育服褲頭穿法】學生平時穿著校服褲腰的位置。若習慣太低穿會顯得腿短；若適度提腰能優化比例。";
+            } else {
+                waistDesc = "【低腰/髖骨處】褲頭落在髖骨（肚臍下方約5~8cm），降低視覺腿長，著重展現美式隨性風。";
+            }
+
+            let adviceText = "";
+
+            switch (proportionCode) {
+                case '37':
+                    adviceText = `
+                        <p class="font-bold text-emerald-400"><i class="fa-solid fa-gem me-1"></i> 視覺表現：三七身（優秀視覺長腿）</p>
+                        <p class="text-[11px]">此腰頭位置打造出非常理想的上下身比例！</p>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300 pt-1">
+                            <li><strong>學生學習點：</strong>若在穿著制服或高腰時呈現三七身，代表此褲頭高度非常適合您。</li>
+                        </ul>
+                    `;
+                    break;
+                case '46':
+                    adviceText = `
+                        <p class="font-bold text-amber-300"><i class="fa-solid fa-circle-check me-1"></i> 視覺表現：四六身（標準勻稱比例）</p>
+                        <p class="text-[11px]">多數人的自然標準體型，視覺和諧舒適。</p>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300 pt-1">
+                            <li><strong>制服優化建議：</strong>穿體育服時，只需將褲頭拉至骨盆上方或肚臍，即可快速邁向三七身視覺。</li>
+                        </ul>
+                    `;
+                    break;
+                case '55':
+                    adviceText = `
+                        <p class="font-bold text-amber-400"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> 視覺表現：五五身（上下身等長）</p>
+                        <p class="text-[11px]">視覺上下半身比例較接近。</p>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300 pt-1">
+                            <li><strong>校服穿搭盲點：</strong>如果同學習慣把體育褲「掉腰」掛在髖骨，很容易把原本四六身穿成五五身！建議將褲頭拉高至肚臍或骨盆上方。</li>
+                        </ul>
+                    `;
+                    break;
+                case '64':
+                    adviceText = `
+                        <p class="font-bold text-rose-400"><i class="fa-solid fa-arrow-up text-xs me-1"></i> 視覺表現：六四身（軀幹較長）</p>
+                        <p class="text-[11px]">視覺上腿長比重較小。</p>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300 pt-1">
+                            <li><strong>教學引導：</strong>請務必嘗試將褲頭拉高至「肚臍」位置，並將制服上衣塞入褲子內，能立刻改善視覺比例。</li>
+                        </ul>
+                    `;
+                    break;
+                default:
+                    adviceText = `<p>請輸入身高與腿長數據進行分析。</p>`;
+            }
+
+            stylingAdvice.innerHTML = `
+                <div class="p-2 bg-slate-800/90 rounded text-[11px] font-mono text-amber-200 border border-slate-700 mb-1.5">
+                    ${waistDesc}
+                </div>
+                ${adviceText}
+            `;
+        }
+
+        function calculateAll() {
+            const h = parseFloat(heightInput.value) || 0;
+            const legMid = parseFloat(legMidInput.value) || 0;
+            const legNavel = parseFloat(legNavelInput.value) || 0;
+            const legUniform = parseFloat(legUniformInput.value) || 0;
+            const legLow = parseFloat(legLowInput.value) || 0;
+
+            if (h <= 0) return;
+
+            // Helper for calculation: Upper = H - Leg, Ratio = Upper / Leg
+            const calcData = (leg) => {
+                const upper = h - leg;
+                const ratio = leg > 0 ? (upper / leg) : 0;
+                const category = getProportionCategory(ratio);
+                return { leg, upper, ratio, category };
+            };
+
+            const resMid = calcData(legMid);
+            const resNavel = calcData(legNavel);
+            const resUniform = calcData(legUniform);
+            const resLow = calcData(legLow);
+
+            // Update Top True Body Banner
+            trueProportionTitle.textContent = resMid.category.title;
+            trueRatioValue.textContent = resMid.ratio.toFixed(2);
+
+            // Update 4 Summary Cards
+            sumMidType.textContent = resMid.category.title;
+            sumMidRatio.textContent = `比率: ${resMid.ratio.toFixed(2)}`;
+
+            sumNavelType.textContent = resNavel.category.title;
+            sumNavelRatio.textContent = `比率: ${resNavel.ratio.toFixed(2)}`;
+
+            sumUniformType.textContent = resUniform.category.title;
+            sumUniformRatio.textContent = `比率: ${resUniform.ratio.toFixed(2)}`;
+
+            sumLowType.textContent = resLow.category.title;
+            sumLowRatio.textContent = `比率: ${resLow.ratio.toFixed(2)}`;
+
+            // Determine active waist for detailed card display
+            let activeRes = resMid;
+            let waistTagText = "【骨盆上方真實身形】";
+
+            if (activeWaist === 'navel') {
+                activeRes = resNavel;
+                waistTagText = "【肚臍高腰測量】";
+            } else if (activeWaist === 'uniform') {
+                activeRes = resUniform;
+                waistTagText = "【制服/體育服褲頭】";
+            } else if (activeWaist === 'low') {
+                activeRes = resLow;
+                waistTagText = "【低腰/髖骨處】";
+            }
+
+            // Update Main Card DOM
+            selectedWaistTag.textContent = `${waistTagText} 分析結果`;
+            proportionTitle.textContent = activeRes.category.title;
+            ratioValueDisplay.textContent = activeRes.ratio.toFixed(2);
+
+            displayHeight.innerHTML = `${h} <span class="text-xs font-normal">cm</span>`;
+            displayLeg.innerHTML = `${activeRes.leg} <span class="text-xs font-normal">cm</span>`;
+            displayUpper.innerHTML = `${activeRes.upper.toFixed(1)} <span class="text-xs font-normal">cm</span>`;
+
+            // Progress bar percents
+            const legPct = Math.min(Math.max(((activeRes.leg / h) * 100), 0), 100).toFixed(1);
+            const upperPct = (100 - legPct).toFixed(1);
+
+            upperPercent.textContent = `${upperPct}%`;
+            legPercent.textContent = `${legPct}%`;
+
+            barUpper.style.width = `${upperPct}%`;
+            barLeg.style.width = `${legPct}%`;
+
+            // Formula explanations
+            formulaStep1.textContent = `${h} - ${activeRes.leg} = ${activeRes.upper.toFixed(1)}`;
+            formulaStep2.textContent = `${activeRes.upper.toFixed(1)} ÷ ${activeRes.leg} = ${activeRes.ratio.toFixed(2)}`;
+
+            // Generate teaching & styling advice
+            generateStylingAdvice(activeRes.category.code, activeWaist, resMid.category.code);
+        }
+
+        // Attach listeners
+        [heightInput, legMidInput, legNavelInput, legUniformInput, legLowInput].forEach(input => {
+            input.addEventListener('input', calculateAll);
+        });
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateAll();
+        });
+    </script>
+</body>
+</html>
